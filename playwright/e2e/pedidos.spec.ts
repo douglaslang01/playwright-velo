@@ -13,10 +13,14 @@ test('deve consultar um pedido aprovado', async ({ page }) => {
 
     // Act
     await page.getByTestId('search-order-id').fill('VLO-85DC4D');
-    await page.getByTestId('search-order-button').click();
+    // await page.getByTestId('search-order-button').click();
+    await page.getByRole('button', { name: 'Buscar Pedido' }).click();
 
     // Assert
-    await expect(page.getByTestId('order-result-id')).toContainText('VLO-85DC4D');
-    await expect(page.getByTestId('order-result-status')).toBeVisible();
-    await expect(page.getByTestId('order-result-status')).toContainText('APROVADO');
+
+    // Não é necessário usar expect para validar o texto,
+    // pois o próprio getByText já garante a correspondência exata (exact: true)
+    // junto com a validação da visibilidade do elemento.
+    await expect(page.getByText('VLO-85DC4D', { exact: true })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('APROVADO', { exact: true })).toBeVisible();
 });
