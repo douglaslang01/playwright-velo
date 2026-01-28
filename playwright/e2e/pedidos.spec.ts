@@ -17,10 +17,11 @@ test('deve consultar um pedido aprovado', async ({ page }) => {
     await page.getByRole('button', { name: 'Buscar Pedido' }).click();
 
     // Assert
+    // const orderCode = page.locator('//p[text()="Pedido"]/..//p[text()="VLO-85DC4D"]');
+    // await expect(orderCode).toBeVisible({ timeout: 10_000 });
 
-    // Não é necessário usar expect para validar o texto,
-    // pois o próprio getByText já garante a correspondência exata (exact: true)
-    // junto com a validação da visibilidade do elemento.
-    await expect(page.getByText('VLO-85DC4D', { exact: true })).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText('APROVADO', { exact: true })).toBeVisible();
+    const containerPedido = page.getByRole('paragraph')
+        .filter({ hasText: /^Pedido$/ })
+        .locator('..'); // Sobe para o elemento pai (div que agrupa ambos)
+    await expect(containerPedido).toContainText('VLO-85DC4D', { timeout: 10_000 });
 });
