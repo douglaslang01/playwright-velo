@@ -24,4 +24,6 @@ test('deve consultar um pedido aprovado', async ({ page }) => {
         .filter({ hasText: /^Pedido$/ })
         .locator('..'); // Sobe para o elemento pai (div que agrupa ambos)
     await expect(containerPedido).toContainText('VLO-85DC4D', { timeout: 10_000 });
+
+    await expect(page.getByText('APROVADO')).toBeVisible();
 });
