@@ -119,7 +119,7 @@ const OrderLookup = () => {
         {notFound && (
           <Card className="border-destructive/50 bg-destructive/5 animate-fade-in">
             <CardContent className="py-8 text-center">
-              <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+              <CircleX className="w-12 h-12 text-destructive mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">
                 Pedido não encontrado
               </h3>
@@ -145,13 +145,12 @@ const OrderLookup = () => {
                   </div>
                 </div>
                 <div
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
-                    searchedOrder.status === 'APROVADO'
-                      ? 'bg-green-100 text-green-700'
-                      : searchedOrder.status === 'REPROVADO'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-amber-100 text-amber-700'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${searchedOrder.status === 'APROVADO'
+                    ? 'bg-green-100 text-green-700'
+                    : searchedOrder.status === 'REPROVADO'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-amber-100 text-amber-700'
+                    }`}
                   role="status"
                 >
                   {searchedOrder.status === 'APROVADO' && <CircleCheckBig className="w-4 h-4" />}
