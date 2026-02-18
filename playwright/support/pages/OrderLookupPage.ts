@@ -3,8 +3,6 @@ import { Page, Locator, expect } from "@playwright/test"
 type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE';
 
 export class OrderLookupPage {
-    private readonly inputOrderNumber: Locator;
-    private readonly btnSearch: Locator;
 
     private readonly statusBadgeConfigs = {
         'APROVADO': { bgClass: 'bg-green-100', textClass: 'text-green-700', iconClass: 'lucide-circle-check-big' },
