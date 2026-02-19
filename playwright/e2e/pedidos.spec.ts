@@ -1,27 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { generateOrderCode } from '../support/helpers';
+import { Header } from '../support/components/Header';
+import { HomePage } from '../support/pages/HomePage';
 import { OrderLookupPage, OrderDetails } from '../support/pages/OrderLookupPage';
-
-
-// AAA - Arrange, Act, Assert
 
 test.describe('Consulta de Pedido', () => {
 
     let orderLookupPage: OrderLookupPage;
 
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:5173/');
-        await expect(page.getByTestId('hero-section').getByRole('heading')).toContainText('Velô Sprint');
-
-        await page.getByRole('link', { name: 'Consultar Pedido' }).click();
-        await expect(page.getByRole('heading')).toContainText('Consultar Pedido');
+        await new HomePage(page).goto();
+        await new Header(page).orderLookupLink();
 
         orderLookupPage = new OrderLookupPage(page);
+        await orderLookupPage.validatePageLoaded();
     });
 
     test('deve consultar um pedido aprovado', async () => {
 
-        // Test data
         const order: OrderDetails = {
             number: 'VLO-85DC4D',
             status: 'APROVADO',
@@ -34,10 +30,8 @@ test.describe('Consulta de Pedido', () => {
             payment: 'À Vista'
         };
 
-        // Act
         await orderLookupPage.searchOrder(order.number);
 
-        // Assert
         await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
@@ -56,10 +50,8 @@ test.describe('Consulta de Pedido', () => {
             payment: 'À Vista'
         };
 
-        // Act
         await orderLookupPage.searchOrder(order.number);
 
-        // Assert
         await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
@@ -78,33 +70,25 @@ test.describe('Consulta de Pedido', () => {
             payment: 'À Vista'
         };
 
-        // Act
         await orderLookupPage.searchOrder(order.number);
 
-        // Assert
         await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
 
-    test('deve exibir mensagem quando o pedido não é encontrado', async ({ page }) => {
-        // Arrange
+    test('deve exibir mensagem quando o pedido não é encontrado', async () => {
         const order = generateOrderCode();
 
-        // Act
         await orderLookupPage.searchOrder(order);
 
-        // Assert
         await orderLookupPage.validateOrderNotFound();
     });
 
     test('deve exibir mensagem quando o número do pedido está fora do padrão', async () => {
-        // Arrange
         const order = '123-XYZ';
 
-        // Act
         await orderLookupPage.searchOrder(order);
 
-        // Assert
         await orderLookupPage.validateOrderNotFound();
     });
 });
