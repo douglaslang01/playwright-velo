@@ -1,14 +1,8 @@
-import { Page, Locator, expect } from "@playwright/test"
+import { Page, expect } from "@playwright/test"
 
 type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE';
 
 export class OrderLookupPage {
-
-    private readonly statusBadgeConfigs = {
-        'APROVADO': { bgClass: 'bg-green-100', textClass: 'text-green-700', iconClass: 'lucide-circle-check-big' },
-        'REPROVADO': { bgClass: 'bg-red-100', textClass: 'text-red-700', iconClass: 'lucide-circle-x' },
-        'EM_ANALISE': { bgClass: 'bg-amber-100', textClass: 'text-amber-700', iconClass: 'lucide-clock' }
-    };
 
     constructor(private page: Page) { }
 
@@ -18,7 +12,13 @@ export class OrderLookupPage {
     }
 
     async validateStatusBadge(status: OrderStatus) {
-        const config = this.statusBadgeConfigs[status];
+        const statusBadgeConfigs = {
+            'APROVADO': { bgClass: 'bg-green-100', textClass: 'text-green-700', iconClass: 'lucide-circle-check-big' },
+            'REPROVADO': { bgClass: 'bg-red-100', textClass: 'text-red-700', iconClass: 'lucide-circle-x' },
+            'EM_ANALISE': { bgClass: 'bg-amber-100', textClass: 'text-amber-700', iconClass: 'lucide-clock' }
+        } as const;
+
+        const config = statusBadgeConfigs[status];
         const statusBadge = this.page.getByRole('status').filter({ hasText: status });
 
         await expect(statusBadge).toHaveClass(new RegExp(config.bgClass));
