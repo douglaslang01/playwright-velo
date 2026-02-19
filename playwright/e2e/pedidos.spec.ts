@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { generateOrderCode } from '../support/helpers';
-import { OrderLookupPage } from '../support/pages/OrderLookupPage';
+import { OrderLookupPage, OrderDetails } from '../support/pages/OrderLookupPage';
 
 
 // AAA - Arrange, Act, Assert
@@ -19,12 +19,12 @@ test.describe('Consulta de Pedido', () => {
         orderLookupPage = new OrderLookupPage(page);
     });
 
-    test('deve consultar um pedido aprovado', async ({ page }) => {
+    test('deve consultar um pedido aprovado', async () => {
 
         // Test data
-        const order = {
+        const order: OrderDetails = {
             number: 'VLO-85DC4D',
-            status: 'APROVADO' as const,
+            status: 'APROVADO',
             color: 'Lunar White',
             weels: 'sport Wheels',
             customer: {
@@ -38,51 +38,15 @@ test.describe('Consulta de Pedido', () => {
         await orderLookupPage.searchOrder(order.number);
 
         // Assert
-
-        // const containerPedido = page.getByRole('paragraph')
-        //     .filter({ hasText: /^Pedido$/ })
-        //     .locator('..'); // Sobe para o elemento pai (div que agrupa ambos)
-        // await expect(containerPedido).toContainText(order, { timeout: 10_000 });
-        // await expect(page.getByText('APROVADO')).toBeVisible();
-
-        await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
-            - img
-            - paragraph: Pedido
-            - paragraph: ${order.number}
-            - status:
-                - img
-                - text: ${order.status}
-            - img "Velô Sprint"
-            - paragraph: Modelo
-            - paragraph: Velô Sprint
-            - paragraph: Cor
-            - paragraph: ${order.color}
-            - paragraph: Interior
-            - paragraph: cream
-            - paragraph: Rodas
-            - paragraph: ${order.weels}
-            - heading "Dados do Cliente" [level=4]
-            - paragraph: Nome
-            - paragraph: ${order.customer.name}
-            - paragraph: Email
-            - paragraph: ${order.customer.email}
-            - paragraph: Loja de Retirada
-            - paragraph
-            - paragraph: Data do Pedido
-            - paragraph: /\\d+\\/\\d+\\/\\d+/
-            - heading "Pagamento" [level=4]
-            - paragraph: ${order.payment}
-            - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-            `);
-
+        await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
 
-    test('deve consultar um pedido reprovado', async ({ page }) => {
+    test('deve consultar um pedido reprovado', async () => {
 
-        const order = {
+        const order: OrderDetails = {
             number: 'VLO-8IER0M',
-            status: 'REPROVADO' as const,
+            status: 'REPROVADO',
             color: 'Midnight Black',
             weels: 'sport Wheels',
             customer: {
@@ -96,44 +60,15 @@ test.describe('Consulta de Pedido', () => {
         await orderLookupPage.searchOrder(order.number);
 
         // Assert
-        await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
-            - img
-            - paragraph: Pedido
-            - paragraph: ${order.number}
-            - status:
-                - img
-                - text: ${order.status}
-            - img "Velô Sprint"
-            - paragraph: Modelo
-            - paragraph: Velô Sprint
-            - paragraph: Cor
-            - paragraph: ${order.color}
-            - paragraph: Interior
-            - paragraph: cream
-            - paragraph: Rodas
-            - paragraph: ${order.weels}
-            - heading "Dados do Cliente" [level=4]
-            - paragraph: Nome
-            - paragraph: ${order.customer.name}
-            - paragraph: Email
-            - paragraph: ${order.customer.email}
-            - paragraph: Loja de Retirada
-            - paragraph
-            - paragraph: Data do Pedido
-            - paragraph: /\\d+\\/\\d+\\/\\d+/
-            - heading "Pagamento" [level=4]
-            - paragraph: ${order.payment}
-            - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-            `);
-
+        await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
 
-    test('deve consultar um pedido em análise', async ({ page }) => {
+    test('deve consultar um pedido em análise', async () => {
 
-        const order = {
+        const order: OrderDetails = {
             number: 'VLO-MSH7ZK',
-            status: 'EM_ANALISE' as const,
+            status: 'EM_ANALISE',
             color: 'Glacier Blue',
             weels: 'aero Wheels',
             customer: {
@@ -147,36 +82,7 @@ test.describe('Consulta de Pedido', () => {
         await orderLookupPage.searchOrder(order.number);
 
         // Assert
-        await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
-            - img
-            - paragraph: Pedido
-            - paragraph: ${order.number}
-            - status:
-                - img
-                - text: ${order.status}
-            - img "Velô Sprint"
-            - paragraph: Modelo
-            - paragraph: Velô Sprint
-            - paragraph: Cor
-            - paragraph: ${order.color}
-            - paragraph: Interior
-            - paragraph: cream
-            - paragraph: Rodas
-            - paragraph: ${order.weels}
-            - heading "Dados do Cliente" [level=4]
-            - paragraph: Nome
-            - paragraph: ${order.customer.name}
-            - paragraph: Email
-            - paragraph: ${order.customer.email}
-            - paragraph: Loja de Retirada
-            - paragraph
-            - paragraph: Data do Pedido
-            - paragraph: /\\d+\\/\\d+\\/\\d+/
-            - heading "Pagamento" [level=4]
-            - paragraph: ${order.payment}
-            - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
-            `);
-
+        await orderLookupPage.validateOrderDetails(order);
         await orderLookupPage.validateStatusBadge(order.status);
     });
 
@@ -188,10 +94,17 @@ test.describe('Consulta de Pedido', () => {
         await orderLookupPage.searchOrder(order);
 
         // Assert
-        await expect(page.locator('#root')).toMatchAriaSnapshot(`
-            - img
-            - heading "Pedido não encontrado" [level=3]
-            - paragraph: Verifique o número do pedido e tente novamente
-        `);
+        await orderLookupPage.validateOrderNotFound();
+    });
+
+    test('deve exibir mensagem quando o número do pedido está fora do padrão', async () => {
+        // Arrange
+        const order = '123-XYZ';
+
+        // Act
+        await orderLookupPage.searchOrder(order);
+
+        // Assert
+        await orderLookupPage.validateOrderNotFound();
     });
 });
