@@ -1,6 +1,6 @@
 import { Page, expect } from "@playwright/test";
 
-export class HomePage {
+export class LandingPage {
 
     constructor(private page: Page) { }
 

@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { generateOrderCode } from '../support/helpers';
 import { Header } from '../support/components/Header';
-import { HomePage } from '../support/pages/HomePage';
+import { LandingPage } from '../support/pages/LandingPage';
 import { OrderLookupPage, OrderDetails } from '../support/pages/OrderLookupPage';
 
 test.describe('Consulta de Pedido', () => {
@@ -9,7 +9,7 @@ test.describe('Consulta de Pedido', () => {
     let orderLookupPage: OrderLookupPage;
 
     test.beforeEach(async ({ page }) => {
-        await new HomePage(page).goto();
+        await new LandingPage(page).goto();
         await new Header(page).orderLookupLink();
 
         orderLookupPage = new OrderLookupPage(page);
