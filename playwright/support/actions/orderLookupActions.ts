@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 
 export type OrderStatus = 'APROVADO' | 'REPROVADO' | 'EM_ANALISE';
 
@@ -16,8 +16,8 @@ export interface OrderDetails {
 
 export function createOrderLookupActions(page: Page) {
 
-  const orderInput = page.getByLabel('Número do Pedido');
-  const searchButton = page.getByRole('button', { name: 'Buscar Pedido' });
+  const orderInput: Locator = page.getByLabel('Número do Pedido');
+  const searchButton: Locator = page.getByRole('button', { name: 'Buscar Pedido' });
 
   return {
 
