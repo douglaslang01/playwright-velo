@@ -1,4 +1,4 @@
-import { test } from '../support/fixtures';
+import { test, expect } from '../support/fixtures';
 import { generateOrderCode } from '../support/helpers';
 import { OrderDetails } from '../support/actions/orderLookupActions';
 
@@ -82,5 +82,12 @@ test.describe('Consulta de Pedido', () => {
         await app.orderLookup.searchOrder(order);
 
         await app.orderLookup.validateOrderNotFound();
+    });
+
+    test('deve manter o botão de buscar pedido desabilitado quando o campo de busca está vazio ou contém apenas espaços', async ({ app }) => {
+        await expect(app.orderLookup.elements.searchButton).toBeDisabled();
+        await app.orderLookup.elements.orderInput.fill('   ');
+
+        await expect(app.orderLookup.elements.searchButton).toBeDisabled();
     });
 });
