@@ -1,4 +1,4 @@
-import { test, expect } from '../support/fixtures';
+import { test } from '../support/fixtures';
 
 test.describe('Configuração do Veiculo', () => {
   const initialPrice = 'R$ 40.000,00';
@@ -25,5 +25,25 @@ test.describe('Configuração do Veiculo', () => {
     await app.configurator.selecttWheels(/Aero Wheels/);
     await app.configurator.expectPrice(initialPrice);
     await app.configurator.expectCarImageSrc('/src/assets/glacier-blue-aero-wheels.png')
+  });
+
+  test('deve atualizar preço ao adicionar e remover opcionais e levar configuração correta ao checkout', async ({ app }) => {
+    await app.configurator.expectPrice(initialPrice);
+
+    await app.configurator.switchToggleOptional(/Precision Park/);
+    await app.configurator.expectPrice('R$ 45.500,00');
+
+    await app.configurator.switchToggleOptional(/Flux Capacitor/);
+    await app.configurator.expectPrice('R$ 50.500,00');
+
+    await app.configurator.switchToggleOptional(/Precision Park/);
+    await app.configurator.expectPrice('R$ 45.000,00');
+
+    await app.configurator.switchToggleOptional(/Flux Capacitor/);
+    await app.configurator.expectPrice(initialPrice);
+
+    await app.configurator.proceedToOrder();
+
+    await app.configurator.expectOrderSummary(initialPrice);
   });
 });
