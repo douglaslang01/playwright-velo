@@ -42,8 +42,9 @@ test.describe('Configuração do Veiculo', () => {
     await app.configurator.switchToggleOptional(/Flux Capacitor/);
     await app.configurator.expectPrice(initialPrice);
 
-    await app.configurator.proceedToOrder();
+    await app.configurator.finishConfigurator();
 
-    await app.configurator.expectOrderSummary(initialPrice);
+    await app.checkout.expectLoaded();
+    await app.checkout.expectSummary(initialPrice);
   });
 });

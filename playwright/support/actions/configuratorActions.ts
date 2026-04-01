@@ -29,18 +29,9 @@ export function createConfiguratorActions(page: Page) {
       await expect(carImage).toHaveAttribute('src', src)
     },
 
-
-    async proceedToOrder() {
+    async finishConfigurator() {
       //await page.getByTestId('checkout-button').click();
       await page.getByRole('button', { name: 'Monte o Seu' }).click();
-    },
-
-    async expectOrderSummary(totalPrice: string) {
-      await expect(page).toHaveURL(/\/order$/);
-      await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible();
-      await expect(page.getByRole('heading', { name: 'Resumo' })).toBeVisible();
-      await expect(page.getByTestId('summary-total-price')).toHaveText(totalPrice);
-      await expect(page.getByTestId('payment-avista')).toContainText(totalPrice);
-    },
+    }
   };
 }
