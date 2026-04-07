@@ -2,8 +2,18 @@ import { test, expect } from '../support/fixtures';
 import { generateOrderCode } from '../support/helpers';
 import { OrderDetails } from '../support/actions/orderLookupActions';
 import { insertOrder, deleteOrderByNumber } from '../support/database/orderRepository';
-import crypto from 'crypto';
+import testData from '../support/fixtures/orders.json' with {type: 'json'};
 
+type OrderFixture = {
+    order: OrderDetails;
+    optionals?: string[];
+};
+type OrderFixtures = {
+    approved: OrderFixture;
+    rejected: OrderFixture;
+    inAnalysis: OrderFixture;
+};
+const orderFixtures = testData as OrderFixtures;
 
 test.describe('Consulta de Pedido', () => {
     test.beforeEach(async ({ app }) => {
@@ -11,24 +21,11 @@ test.describe('Consulta de Pedido', () => {
     });
 
     test('deve consultar um pedido aprovado', async ({ app }) => {
-        const order: OrderDetails = {
-            number: 'VLO-SE4R01',
-            status: 'APROVADO',
-            color: 'Lunar White',
-            weels: 'sport Wheels',
-            customer: {
-                name: 'Douglas Lang',
-                email: 'douglas.lang@velo.dev',
-                document: '982.359.660-34',
-                phone: '(51) 99349-4410'
-            },
-            payment: 'À Vista',
-            total_price: '52500'
-        };
+        const { order, optionals } = orderFixtures.approved;
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder(order, ['flux-capacitor', 'precision-park']);
+        await insertOrder(order, optionals);
 
         await app.orderLookup.searchOrder(order.number);
 
@@ -37,24 +34,11 @@ test.describe('Consulta de Pedido', () => {
     });
 
     test('deve consultar um pedido reprovado', async ({ app }) => {
-        const order: OrderDetails = {
-            number: 'VLO-SE4R02',
-            status: 'REPROVADO',
-            color: 'Midnight Black',
-            weels: 'sport Wheels',
-            customer: {
-                name: 'Steve Jobs',
-                email: 'steve.jobs@apple.com',
-                document: '288.456.800-02',
-                phone: '(51) 99999-9999'
-            },
-            payment: 'À Vista',
-            total_price: '52500',
-        };
+        const { order, optionals } = orderFixtures.rejected;
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder(order, ['flux-capacitor', 'precision-park']);
+        await insertOrder(order, optionals);
 
         await app.orderLookup.searchOrder(order.number);
 
@@ -63,24 +47,11 @@ test.describe('Consulta de Pedido', () => {
     });
 
     test('deve consultar um pedido em análise', async ({ app }) => {
-        const order: OrderDetails = {
-            number: 'VLO-SE4R03',
-            status: 'EM_ANALISE',
-            color: 'Glacier Blue',
-            weels: 'aero Wheels',
-            customer: {
-                name: 'Joao da Silva',
-                email: 'joao.silva@velo.dev',
-                document: '795.919.250-26',
-                phone: '(51) 99999-9999'
-            },
-            payment: 'À Vista',
-            total_price: '40000'
-        };
+        const { order, optionals } = orderFixtures.inAnalysis;
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder(order);
+        await insertOrder(order, optionals);
 
         await app.orderLookup.searchOrder(order.number);
 
