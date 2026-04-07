@@ -18,29 +18,17 @@ test.describe('Consulta de Pedido', () => {
             weels: 'sport Wheels',
             customer: {
                 name: 'Douglas Lang',
-                email: 'douglas.lang@velo.dev'
+                email: 'douglas.lang@velo.dev',
+                document: '982.359.660-34',
+                phone: '(51) 99349-4410'
             },
-            payment: 'À Vista'
+            payment: 'À Vista',
+            total_price: '52500'
         };
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder({
-            id: crypto.randomUUID(),
-            order_number: order.number,
-            color: 'lunar-white',
-            wheel_type: 'sport',
-            customer_name: order.customer.name,
-            customer_email: order.customer.email,
-            customer_phone: '(51) 99349-4410',
-            customer_cpf: '982.359.660-34',
-            payment_method: 'avista',
-            total_price: '52500',
-            status: order.status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            optionals: ['flux-capacitor', 'precision-park']
-        });
+        await insertOrder(order, ['flux-capacitor', 'precision-park']);
 
         await app.orderLookup.searchOrder(order.number);
 
@@ -56,29 +44,17 @@ test.describe('Consulta de Pedido', () => {
             weels: 'sport Wheels',
             customer: {
                 name: 'Steve Jobs',
-                email: 'steve.jobs@apple.com'
+                email: 'steve.jobs@apple.com',
+                document: '288.456.800-02',
+                phone: '(51) 99999-9999'
             },
-            payment: 'À Vista'
+            payment: 'À Vista',
+            total_price: '52500',
         };
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder({
-            id: crypto.randomUUID(),
-            order_number: order.number,
-            color: 'midnight-black',
-            wheel_type: 'sport',
-            customer_name: order.customer.name,
-            customer_email: order.customer.email,
-            customer_phone: '(51) 99999-9999',
-            customer_cpf: '288.456.800-02',
-            payment_method: 'avista',
-            total_price: '52500',
-            status: order.status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            optionals: ['flux-capacitor', 'precision-park']
-        });
+        await insertOrder(order, ['flux-capacitor', 'precision-park']);
 
         await app.orderLookup.searchOrder(order.number);
 
@@ -94,29 +70,17 @@ test.describe('Consulta de Pedido', () => {
             weels: 'aero Wheels',
             customer: {
                 name: 'Joao da Silva',
-                email: 'joao.silva@velo.dev'
+                email: 'joao.silva@velo.dev',
+                document: '795.919.250-26',
+                phone: '(51) 99999-9999'
             },
-            payment: 'À Vista'
+            payment: 'À Vista',
+            total_price: '40000'
         };
 
         await deleteOrderByNumber(order.number);
 
-        await insertOrder({
-            id: crypto.randomUUID(),
-            order_number: order.number,
-            color: 'glacier-blue',
-            wheel_type: 'aero',
-            customer_name: order.customer.name,
-            customer_email: order.customer.email,
-            customer_phone: '(51) 99999-9999',
-            customer_cpf: '795.919.250-26',
-            payment_method: 'avista',
-            total_price: '40000',
-            status: order.status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            optionals: []
-        });
+        await insertOrder(order);
 
         await app.orderLookup.searchOrder(order.number);
 
