@@ -95,7 +95,7 @@ const Order = () => {
   });
 
   const totalPrice = calculateTotalPrice(configuration);
-  
+
   // Cálculo dinâmico das parcelas baseado no valor da entrada
   // Parcela = (Total - Entrada) / 12 * 1.02
   const amountToFinance = Math.max(0, totalPrice - entryValue);
@@ -141,7 +141,7 @@ const Order = () => {
             title: 'Erro',
             description: 'Falha ao consultar análise de crédito. Verifique seus dados ou tente mais tarde.',
             variant: 'destructive',
-            // @ts-ignore - data-testid para testes
+            // @ts-expect-error - data-testid para testes
             'data-testid': 'toast-error',
           });
           setIsSubmitting(false);
@@ -175,7 +175,7 @@ const Order = () => {
           title: 'Erro',
           description: 'Falha ao consultar análise de crédito. Verifique seus dados ou tente mais tarde.',
           variant: 'destructive',
-          // @ts-ignore - data-testid para testes
+          // @ts-expect-error - data-testid para testes
           'data-testid': 'toast-error',
         });
         setIsSubmitting(false);
@@ -183,8 +183,8 @@ const Order = () => {
       }
     }
 
-    const finalPrice = paymentMethod === 'financiamento' 
-      ? (entryValue + totalFinanced) 
+    const finalPrice = paymentMethod === 'financiamento'
+      ? (entryValue + totalFinanced)
       : totalPrice;
 
     const optionalsSanitized = (
@@ -298,6 +298,7 @@ const Order = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
+                    {/* @ts-expect-error tipagem do react-input-mask é incompatível com React 18 */}
                     <InputMask
                       mask="(99) 99999-9999"
                       value={formData.phone}
@@ -316,6 +317,7 @@ const Order = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="document">CPF</Label>
+                    {/* @ts-expect-error tipagem do react-input-mask é incompatível com React 18 */}
                     <InputMask
                       mask="999.999.999-99"
                       value={formData.document}

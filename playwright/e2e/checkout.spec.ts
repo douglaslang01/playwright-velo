@@ -2,17 +2,18 @@ import { test, expect } from '../support/fixtures';
 import testData from '../support/fixtures/checkout.json' with {type: 'json'};
 
 test.describe('Checkout', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let alerts: any;
-
-    test.beforeEach(async ({ page, app }) => {
-        await page.goto('/order');
-        await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible();
-
-        alerts = app.checkout.elements.alerts;
-    });
 
     test.describe('Validações de campos obrigatórios', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let alerts: any;
+
+        test.beforeEach(async ({ page, app }) => {
+            await page.goto('/order');
+            await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible();
+
+            alerts = app.checkout.elements.alerts;
+        });
+
         test('deve validar obrigatoriedade de todos os campos em branco', async ({ app }) => {
             // Act
             await app.checkout.submit();
@@ -80,6 +81,46 @@ test.describe('Checkout', () => {
 
             // Assert
             await expect(alerts.terms).toHaveText('Aceite os termos');
+        });
+    });
+
+    test.describe('Fluxos de Pagamento', () => {
+        test('deve aprovar pedido com pagamento à vista passando pelo fluxo E2E (landing, configurador e checkout)', async ({ page, app }) => {
+            const customer = {
+                name: 'Maria',
+                lastname: 'Silva',
+                email: 'maria.silva@example.com',
+                phone: '(11) 99999-9999',
+                document: '12345678909',
+                store: 'Velô Paulista',
+                paymentMethod: 'À Vista',
+                totalPrice: 'R$ 40.000,00'
+            };
+
+            // Arrange
+            await page.goto('/');
+
+            await page.getByRole('link', { name: /Configure Agora/i }).first().click();
+
+            await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
+            await app.configurator.expectPrice(customer.totalPrice);
+            await app.configurator.finishConfigurator();
+
+            await app.checkout.expectLoaded();
+
+            await app.checkout.fillCustomerlData(customer);
+            await app.checkout.selectStore(customer.store);
+
+            // Act
+            await app.checkout.selectPaymentMethod(customer.paymentMethod);
+            await app.checkout.expectSummaryTotal(customer.totalPrice);
+            await app.checkout.acceptTerms();
+            await app.checkout.submit();
+
+            // Assert
+            await expect(page).toHaveURL(/\/success/);
+            await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible();
+            await expect(page.getByText(`${customer.name} ${customer.lastname}`)).toBeVisible();
         });
     });
 });
