@@ -1,0 +1,16 @@
+{
+    "valid": {
+        "name": "João",
+        "lastname": "Silva",
+        "email": "joao.silva@email.com",
+        "phone": "(11) 99999-9999",
+        "document": "529.982.247-25"
+    },
+    "invalid": {
+        "name": "A",
+        "lastname": "B",
+        "email": "cliente@com",
+        "phone": "(11) 99999",
+        "document": "123"
+    }
+}
