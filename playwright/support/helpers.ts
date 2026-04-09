@@ -12,3 +12,23 @@ export function generateOrderCode() {
 
     return `VLO-${randomLetters}${randomNumbers}`;
 }
+
+export function formatDocument(cpf: string) {
+    // Remove tudo que não for número
+    const digits = cpf.replace(/\D/g, "");
+
+    // Verifica se já está formatado (com pontos e traço)
+    const isFormatted = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf);
+
+    if (isFormatted) {
+        return cpf; // já está formatado
+    }
+
+    // Verifica se tem 11 dígitos
+    if (digits.length !== 11) {
+        throw new Error("CPF inválido");
+    }
+
+    // Formata no padrão XXX.XXX.XXX-XX
+    return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}

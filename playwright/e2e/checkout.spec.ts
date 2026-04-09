@@ -1,5 +1,7 @@
 import { test, expect } from '../support/fixtures';
 import testData from '../support/fixtures/checkout.json' with {type: 'json'};
+import { deleteOrderByEmailAndDocument } from '../support/database/orderRepository';
+import { formatDocument } from '../support/helpers';
 
 test.describe('Checkout', () => {
 
@@ -86,16 +88,10 @@ test.describe('Checkout', () => {
 
     test.describe('Fluxos de Pagamento', () => {
         test('deve aprovar pedido com pagamento à vista passando pelo fluxo E2E (landing, configurador e checkout)', async ({ page, app }) => {
-            const customer = {
-                name: 'Maria',
-                lastname: 'Silva',
-                email: 'maria.silva@example.com',
-                phone: '(11) 99999-9999',
-                document: '12345678909',
-                store: 'Velô Paulista',
-                paymentMethod: 'À Vista',
-                totalPrice: 'R$ 40.000,00'
-            };
+
+            const customer = testData.e2e;
+            customer.document = formatDocument(customer.document);
+            await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
             // Arrange
             await page.goto('/');

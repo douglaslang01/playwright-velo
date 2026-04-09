@@ -32,6 +32,13 @@ export async function insertOrder(order: OrderDetails, optionals: string[] = [])
     await db.insertInto('orders').values(data).execute();
 }
 
+export async function deleteOrderByEmailAndDocument(email: string, document: string) {
+    await db.deleteFrom('orders')
+        .where('customer_email', '=', email)
+        .where('customer_cpf', '=', document)
+        .execute();
+}
+
 export async function deleteOrderByNumber(orderNumber: string) {
     await db.deleteFrom('orders').where('order_number', '=', orderNumber).execute();
 }   
