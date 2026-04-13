@@ -22,5 +22,15 @@
         "store": "Velô Paulista",
         "paymentMethod": "À Vista",
         "totalPrice": "R$ 40.000,00"
+    },
+    "creditApproval": {
+        "name": "Carlos",
+        "lastname": "Santos",
+        "email": "carlos.santos@example.com",
+        "phone": "(11) 99999-9999",
+        "document": "60163007055",
+        "store": "Velô Paulista",
+        "paymentMethod": "Financiamento",
+        "totalPrice": "R$ 40.000,00"
     }
 }

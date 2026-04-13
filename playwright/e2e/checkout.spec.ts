@@ -96,7 +96,7 @@ test.describe('Checkout', () => {
             // Arrange
             await page.goto('/');
 
-            await page.getByRole('link', { name: /Configure Agora/i }).first().click();
+            await page.getByRole('link', { name: /Configure Agora/i }).click();
 
             await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
             await app.configurator.expectPrice(customer.totalPrice);
@@ -110,6 +110,49 @@ test.describe('Checkout', () => {
             // Act
             await app.checkout.selectPaymentMethod(customer.paymentMethod);
             await app.checkout.expectSummaryTotal(customer.totalPrice);
+            await app.checkout.acceptTerms();
+            await app.checkout.submit();
+
+            // Assert
+            await expect(page).toHaveURL(/\/success/);
+            await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible();
+            await expect(page.getByText(`${customer.name} ${customer.lastname}`)).toBeVisible();
+        });
+
+        test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ page, app }) => {
+
+            const customer = testData.creditApproval;
+            customer.document = formatDocument(customer.document);
+            await deleteOrderByEmailAndDocument(customer.email, customer.document);
+
+            await page.route('**/functions/v1/credit-analysis', route => {
+                route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        status: 'Done',
+                        score: 701,
+                    }),
+                });
+            });
+
+
+            // Arrange
+            await page.goto('/');
+
+            await page.getByRole('link', { name: /Configure Agora/i }).click();
+
+            await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
+            await app.configurator.expectPrice(customer.totalPrice);
+            await app.configurator.finishConfigurator();
+            await app.checkout.expectLoaded();
+
+            await app.checkout.fillCustomerlData(customer);
+            await app.checkout.selectStore(customer.store);
+
+            // Act
+            await app.checkout.selectPaymentMethod(customer.paymentMethod);
+            //await app.checkout.expectSummaryTotal(customer.totalPrice);
             await app.checkout.acceptTerms();
             await app.checkout.submit();
 
