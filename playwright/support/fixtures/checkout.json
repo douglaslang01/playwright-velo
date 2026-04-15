@@ -42,5 +42,26 @@
         "store": "Velô Paulista",
         "paymentMethod": "Financiamento",
         "totalPrice": "R$ 40.000,00"
+    },
+    "creditRejected": {
+        "name": "Douglas",
+        "lastname": "Reprovado",
+        "email": "douglas.reprovado@email.com",
+        "document": "12345678901",
+        "phone": "51999999999",
+        "totalPrice": "R$ 40.000,00",
+        "paymentMethod": "Financiamento",
+        "store": "Velô Paulista"
+    },
+    "creditRejectedWithDownPayment": {
+        "name": "Ana",
+        "lastname": "Reprovada",
+        "email": "ana.reprovada@email.com",
+        "document": "68889907029",
+        "phone": "51999999998",
+        "totalPrice": "R$ 40.000,00",
+        "paymentMethod": "Financiamento",
+        "store": "Velô Paulista",
+        "downPayment": "19999"
     }
 }
