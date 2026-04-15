@@ -45,6 +45,6 @@ test.describe('Configuração do Veiculo', () => {
     await app.configurator.finishConfigurator();
 
     await app.checkout.expectLoaded();
-    await app.checkout.expectSummary(initialPrice);
+    await app.checkout.expectSummaryTotal(initialPrice);
   });
 });
