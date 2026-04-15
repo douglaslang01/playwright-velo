@@ -32,5 +32,15 @@
         "store": "Velô Paulista",
         "paymentMethod": "Financiamento",
         "totalPrice": "R$ 40.000,00"
+    },
+    "creditInAnalysis": {
+        "name": "Fernando",
+        "lastname": "Papito",
+        "email": "papito@robot-mars.com",
+        "phone": "(11) 99999-9999",
+        "document": "52411123086",
+        "store": "Velô Paulista",
+        "paymentMethod": "Financiamento",
+        "totalPrice": "R$ 40.000,00"
     }
 }
