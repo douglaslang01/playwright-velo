@@ -63,5 +63,27 @@
         "paymentMethod": "Financiamento",
         "store": "Velô Paulista",
         "downPayment": "19999"
+    },
+    "creditApprovedWithDownPaymentEqualTo50": {
+        "name": "Beatriz",
+        "lastname": "Aprovada",
+        "email": "beatriz.aprovada@email.com",
+        "document": "72717551018",
+        "phone": "51999999997",
+        "totalPrice": "R$ 40.000,00",
+        "paymentMethod": "Financiamento",
+        "store": "Velô Paulista",
+        "downPayment": "20000"
+    },
+    "creditApprovedWithDownPaymentGreaterThan50": {
+        "name": "Carlos",
+        "lastname": "Santos",
+        "email": "carlos.santos@example.com",
+        "phone": "(11) 99999-9999",
+        "document": "60163007055",
+        "store": "Velô Paulista",
+        "paymentMethod": "Financiamento",
+        "totalPrice": "R$ 40.000,00",
+        "downPayment": "25000"
     }
 }

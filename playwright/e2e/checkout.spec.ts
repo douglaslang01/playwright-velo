@@ -285,7 +285,87 @@ test.describe('Checkout', () => {
             await expect(page.getByRole('heading', { name: 'Crédito Reprovado' })).toBeVisible();
             await expect(page.getByText(`${customer.name} ${customer.lastname}`)).toBeVisible();
         });
+
+        test('deve aprovar o crédito com score <= 500 no financiamento com entrada igual a 50%', async ({ page, app }) => {
+
+            const customer = testData.creditApprovedWithDownPaymentEqualTo50;
+            customer.document = formatDocument(customer.document);
+            await deleteOrderByEmailAndDocument(customer.email, customer.document);
+
+            await page.route('**/functions/v1/credit-analysis', route => {
+                route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        status: 'Done',
+                        score: 450,
+                    }),
+                });
+            });
+
+            // Arrange
+            await page.goto('/');
+            await page.getByRole('link', { name: /Configure Agora/i }).click();
+
+            await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
+            await app.configurator.expectPrice(customer.totalPrice);
+            await app.configurator.finishConfigurator();
+            await app.checkout.expectLoaded();
+
+            await app.checkout.fillCustomerlData(customer);
+            await app.checkout.selectStore(customer.store);
+
+            // Act
+            await app.checkout.selectPaymentMethod(customer.paymentMethod);
+            await app.checkout.fillDownPayment(customer.downPayment); // 👈 key difference
+            await app.checkout.acceptTerms();
+            await app.checkout.submit();
+
+            // Assert
+            await expect(page).toHaveURL(/\/success/);
+            await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible();
+            await expect(page.getByText(`${customer.name} ${customer.lastname}`)).toBeVisible();
+        });
+
+        test('deve aprovar o crédito com score <= 500 no financiamento com entrada maior que 50%', async ({ page, app }) => {
+
+            const customer = testData.creditApprovedWithDownPaymentGreaterThan50;
+            customer.document = formatDocument(customer.document);
+            await deleteOrderByEmailAndDocument(customer.email, customer.document);
+
+            await page.route('**/functions/v1/credit-analysis', route => {
+                route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        status: 'Done',
+                        score: 300,
+                    }),
+                });
+            });
+
+            // Arrange
+            await page.goto('/');
+            await page.getByRole('link', { name: /Configure Agora/i }).click();
+
+            await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
+            await app.configurator.expectPrice(customer.totalPrice);
+            await app.configurator.finishConfigurator();
+            await app.checkout.expectLoaded();
+
+            await app.checkout.fillCustomerlData(customer);
+            await app.checkout.selectStore(customer.store);
+
+            // Act
+            await app.checkout.selectPaymentMethod(customer.paymentMethod);
+            await app.checkout.fillDownPayment(customer.downPayment); // 👈 key difference
+            await app.checkout.acceptTerms();
+            await app.checkout.submit();
+
+            // Assert
+            await expect(page).toHaveURL(/\/success/);
+            await expect(page.getByRole('heading', { name: 'Pedido Aprovado!' })).toBeVisible();
+            await expect(page.getByText(`${customer.name} ${customer.lastname}`)).toBeVisible();
+        });
     });
-
-
 });
