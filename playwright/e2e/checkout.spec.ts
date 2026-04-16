@@ -87,7 +87,7 @@ test.describe('Checkout', () => {
     });
 
     test.describe('Fluxos de Pagamento', () => {
-        test('deve aprovar pedido com pagamento à vista passando pelo fluxo E2E (landing, configurador e checkout)', async ({ page, app }) => {
+        test('deve aprovar pedido com pagamento à vista passando pelo fluxo E2E (landing, configurador e checkout)', async ({ app }) => {
 
             const customer = testData.e2e;
             customer.document = formatDocument(customer.document);
@@ -114,7 +114,7 @@ test.describe('Checkout', () => {
             await app.checkout.expectOrderResult('Pedido Aprovado!');
         });
 
-        test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ page, app }) => {
+        test('deve aprovar automaticamente o crédito quando o score do CPF for maior que 700 no financiamento', async ({ app }) => {
 
             const customer = testData.creditApproval;
             customer.document = formatDocument(customer.document);
@@ -142,7 +142,7 @@ test.describe('Checkout', () => {
             await app.checkout.expectOrderResult('Pedido Aprovado!');
         });
 
-        test('deve deixar o pedido em análise quando o score do CPF for entre 501 e 700 no financiamento', async ({ page, app }) => {
+        test('deve deixar o pedido em análise quando o score do CPF for entre 501 e 700 no financiamento', async ({ app }) => {
 
             const customer = testData.creditInAnalysis;
             customer.document = formatDocument(customer.document);
@@ -169,7 +169,7 @@ test.describe('Checkout', () => {
             await app.checkout.expectOrderResult('Pedido em Análise!');
         });
 
-        test('deve reprovar o crédito com score <= 500 no financiamento sem entrada', async ({ page, app }) => {
+        test('deve reprovar o crédito com score <= 500 no financiamento sem entrada', async ({ app }) => {
 
             const customer = testData.creditRejected;
             customer.document = formatDocument(customer.document);
@@ -196,7 +196,7 @@ test.describe('Checkout', () => {
             await app.checkout.expectOrderResult('Crédito Reprovado');
         });
 
-        test('deve reprovar o crédito com score <= 500 no financiamento com entrada menor que 50%', async ({ page, app }) => {
+        test('deve reprovar o crédito com score <= 500 no financiamento com entrada menor que 50%', async ({ app }) => {
 
             const customer = testData.creditRejectedWithDownPayment;
             customer.document = formatDocument(customer.document);
@@ -224,7 +224,7 @@ test.describe('Checkout', () => {
             await app.checkout.expectOrderResult('Crédito Reprovado');
         });
 
-        test('deve aprovar o crédito com score <= 500 no financiamento com entrada igual a 50%', async ({ page, app }) => {
+        test('deve aprovar o crédito com score <= 500 no financiamento com entrada igual a 50%', async ({ app }) => {
 
             const customer = testData.creditApprovedWithDownPaymentEqualTo50;
             customer.document = formatDocument(customer.document);
