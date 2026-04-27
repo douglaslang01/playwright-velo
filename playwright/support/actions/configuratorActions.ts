@@ -10,12 +10,6 @@ export function createConfiguratorActions(page: Page) {
       await expect(page.getByRole('heading', { name: 'Velô Sprint' })).toBeVisible();
     },
 
-    async startConfigurator() {
-      await page.goto('/');
-      await page.getByRole('link', { name: /Configure Agora/i }).click();
-      await this.expectLoaded();
-    },
-
     async selectColor(name: string) {
       await page.getByRole('button', { name }).click();
     },

@@ -87,6 +87,11 @@ test.describe('Checkout', () => {
     });
 
     test.describe('Fluxos de Pagamento', () => {
+
+        test.beforeEach(async ({ app }) => {
+            await app.hero.open();
+        });
+
         test('deve aprovar pedido com pagamento à vista passando pelo fluxo E2E (landing, configurador e checkout)', async ({ app }) => {
 
             const customer = testData.e2e;
@@ -94,11 +99,8 @@ test.describe('Checkout', () => {
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
-
             await app.checkout.expectLoaded();
 
             await app.checkout.fillCustomerlData(customer);
@@ -120,11 +122,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(701);
+            await app.mock.creditAnalysis(701);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
@@ -148,11 +148,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(600);
+            await app.mock.creditAnalysis(600);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
@@ -175,11 +173,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(500);
+            await app.mock.creditAnalysis(500);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
@@ -193,7 +189,7 @@ test.describe('Checkout', () => {
             await app.checkout.submit();
 
             // Assert
-            await app.checkout.expectOrderResult('Crédito Reprovado');
+            await app.checkout.expectOrderResult('Pedido Reprovado!');
         });
 
         test('deve reprovar o crédito com score <= 500 no financiamento com entrada menor que 50%', async ({ app }) => {
@@ -202,11 +198,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(400);
+            await app.mock.creditAnalysis(400);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
@@ -221,7 +215,7 @@ test.describe('Checkout', () => {
             await app.checkout.submit();
 
             // Assert
-            await app.checkout.expectOrderResult('Crédito Reprovado');
+            await app.checkout.expectOrderResult('Pedido Reprovado!');
         });
 
         test('deve aprovar o crédito com score <= 500 no financiamento com entrada igual a 50%', async ({ app }) => {
@@ -230,11 +224,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(450);
+            await app.mock.creditAnalysis(450);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
@@ -258,11 +250,9 @@ test.describe('Checkout', () => {
             customer.document = formatDocument(customer.document);
             await deleteOrderByEmailAndDocument(customer.email, customer.document);
 
-            await app.checkout.mockCreditAnalysisScore(300);
+            await app.mock.creditAnalysis(300);
 
             // Arrange
-            await app.configurator.startConfigurator();
-
             await app.configurator.expectPrice(customer.totalPrice);
             await app.configurator.finishConfigurator();
             await app.checkout.expectLoaded();
