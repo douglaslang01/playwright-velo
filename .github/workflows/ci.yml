@@ -75,14 +75,28 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      # 5. Obter as configurações do Vercel
-      - name: Pull Vercel Config
-        run: yarn vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+      # 5. Valida se as credenciais do Vercel estão presentes e no formato esperado
+      #    (não expõe os valores, apenas confirma tamanho e prefixo)
+      - name: Validate Vercel credentials
+        run: |
+          if [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ] || [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN, VERCEL_ORG_ID ou VERCEL_PROJECT_ID não estão definidos nos secrets."
+            exit 1
+          fi
+          echo "ORG_ID começa com team_? $(echo "$VERCEL_ORG_ID" | grep -q '^team_' && echo sim || echo NAO)"
+          echo "PROJECT_ID começa com prj_? $(echo "$VERCEL_PROJECT_ID" | grep -q '^prj_' && echo sim || echo NAO)"
 
-      # 6. Build para o Vercel
+      # 6. Obter as configurações do Vercel
+      - name: Pull Vercel Config
+        run: yarn vercel pull --yes --environment=preview --scope=$VERCEL_SCOPE --token=$VERCEL_TOKEN
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # 7. Build para o Vercel
       - name: Build for Vercel
         run: yarn vercel build --token=$VERCEL_TOKEN
 
-      # 7. Deploy Preview no Vercel
+      # 8. Deploy Preview no Vercel
       - name: Deploy Preview
         run: yarn vercel deploy --prebuilt --target=preview --token=$VERCEL_TOKEN
