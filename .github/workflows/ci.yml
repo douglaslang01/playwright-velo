@@ -19,8 +19,10 @@ env:
   NODE_VERSION: '24'
   # Token do Vercel para autenticação
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   # Scope do Vercel para autenticação
-  VERCEL_SCOPE: douglas-lang
+  VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
 
 jobs:
   unit-tests:
