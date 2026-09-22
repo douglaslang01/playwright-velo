@@ -1,9 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   calculateTotalPrice,
   calculateInstallment,
   formatPrice,
+  useConfiguratorStore,
   CarConfiguration,
+  Order,
 } from './configuratorStore';
 
 const baseConfig: CarConfiguration = {
@@ -62,3 +64,72 @@ describe('formatPrice', () => {
     expect(formatPrice(1234.56)).toBe('R$ 1.234,56');
   });
 });
+
+const makeOrder = (email: string): Order => ({
+  id: `VLO-${email}`,
+  configuration: baseConfig,
+  totalPrice: 40000,
+  customer: {
+    name: 'Nome',
+    surname: 'Sobrenome',
+    email,
+    phone: '11999999999',
+    cpf: '12345678900',
+    store: 'Loja Centro',
+  },
+  paymentMethod: 'avista',
+  status: 'APROVADO',
+  createdAt: new Date().toISOString(),
+});
+
+describe('login / getUserOrders / logout', () => {
+  beforeEach(() => {
+    useConfiguratorStore.setState({ orders: [], currentUserEmail: null });
+  });
+
+  it('login retorna true e autentica o e-mail quando já existe pedido com esse e-mail', () => {
+    useConfiguratorStore.setState({ orders: [makeOrder('cliente@teste.com')] });
+
+    const result = useConfiguratorStore.getState().login('cliente@teste.com');
+
+    expect(result).toBe(true);
+    expect(useConfiguratorStore.getState().currentUserEmail).toBe('cliente@teste.com');
+  });
+
+  it('login retorna false e não autentica quando não há pedido com esse e-mail', () => {
+    useConfiguratorStore.setState({ orders: [makeOrder('outro@teste.com')] });
+
+    const result = useConfiguratorStore.getState().login('cliente@teste.com');
+
+    expect(result).toBe(false);
+    expect(useConfiguratorStore.getState().currentUserEmail).toBeNull();
+  });
+
+  it('getUserOrders retorna array vazio quando não há usuário logado', () => {
+    useConfiguratorStore.setState({ orders: [makeOrder('cliente@teste.com')] });
+
+    expect(useConfiguratorStore.getState().getUserOrders()).toEqual([]);
+  });
+
+  it('getUserOrders retorna apenas os pedidos do e-mail autenticado', () => {
+    const order1 = makeOrder('cliente@teste.com');
+    const order2 = makeOrder('outro@teste.com');
+    useConfiguratorStore.setState({ orders: [order1, order2] });
+    useConfiguratorStore.getState().login('cliente@teste.com');
+
+    const userOrders = useConfiguratorStore.getState().getUserOrders();
+
+    expect(userOrders).toEqual([order1]);
+  });
+
+  it('logout limpa o usuário autenticado e getUserOrders volta a retornar vazio', () => {
+    useConfiguratorStore.setState({ orders: [makeOrder('cliente@teste.com')] });
+    useConfiguratorStore.getState().login('cliente@teste.com');
+
+    useConfiguratorStore.getState().logout();
+
+    expect(useConfiguratorStore.getState().currentUserEmail).toBeNull();
+    expect(useConfiguratorStore.getState().getUserOrders()).toEqual([]);
+  });
+});
+
