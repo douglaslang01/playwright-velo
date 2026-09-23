@@ -1,13 +1,7 @@
-# ============================================================
-# Continuous Integration
-# ------------------------------------------------------------
-# Propósito: workflow de CI focado exclusivamente na execução
-# de testes unitários (Vitest) a cada push na branch main.
-# Estrutura simples e pronta para expansão futura (ex.: lint,
-# build, cache, matrix, deploy, etc.) sem alterar o fluxo atual.
-# ============================================================
+# Workflow de Integração Contínua focado em execução de testes unitários
+# Estrutura preparada para expansão futura (novos jobs, stages, etc.)
 
-name: Continuous Integration
+name: Continuous Deployment
 
 on:
   push:
@@ -15,13 +9,12 @@ on:
       - main
 
 env:
-  # Versão do Node.js utilizada em todo o workflow
+  # Versão do Node utilizada em todo o workflow
   NODE_VERSION: '24'
-  # Token do Vercel para autenticação
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_SCOPE: 'douglas-lang'
+  VERCEL_SCOPE: douglas-lang
 
 jobs:
   unit-tests:
@@ -29,21 +22,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Faz o checkout do código-fonte do repositório
+      # 1. Faz checkout do código do repositório
       - name: Checkout repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v6.0.2
 
-      # 2. Configura o ambiente Node.js na versão definida em NODE_VERSION
+      # 2. Configura o ambiente Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v6.5.0
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # 3. Habilita o Corepack para gerenciar o Yarn corretamente
-      - name: Enable Corepack (Yarn)
+      # 3. Habilita o Corepack para gerenciamento do Yarn
+      - name: Enable Corepack
         run: corepack enable
 
-      # 4. Instala as dependências do projeto usando o yarn.lock
+      # 4. Instala as dependências do projeto
       - name: Install dependencies
         run: yarn install
 
@@ -55,82 +48,86 @@ jobs:
     name: Build & Deploy Vercel Preview
     needs: [unit-tests]
     runs-on: ubuntu-latest
-    outputs: 
+    outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
 
     steps:
-      # 1. Faz o checkout do código-fonte do repositório
+      # 1. Faz checkout do código do repositório
       - name: Checkout repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v6.0.2
 
-      # 2. Configura o ambiente Node.js na versão definida em NODE_VERSION
+      # 2. Configura o ambiente Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v6.5.0
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # 3. Habilita o Corepack para gerenciar o Yarn corretamente
-      - name: Enable Corepack (Yarn)
+      # 3. Habilita o Corepack para gerenciamento do Yarn
+      - name: Enable Corepack
         run: corepack enable
 
-      # 4. Instala as dependências do projeto usando o yarn.lock
+      # 4. Instala as dependências do projeto
       - name: Install dependencies
         run: yarn install
 
-      # 5. Obter as configurações do vercel 
+      # 5. Obter as configurações do vercel
       - name: Pull Vercel Config
         run: |
           yarn vercel pull --yes \
           --environment=preview \
-          --token=${{ env.VERCEL_TOKEN }} 
+          --token=$VERCEL_TOKEN \
+          --scope=$VERCEL_SCOPE
       
       # 6. Build para o Vercel
-      - name: Build for Vercel
+      - name: Build Vercel
         run: yarn vercel build --token=$VERCEL_TOKEN
 
-      # 7. Deploy Preview no Vercel
-      - name: Deploy Preview
+      # 7. Deploy preview no vercel
+      - name: Deploy preview
         id: deploy
         run: |
-          URL=$(yarn --silent vercel deploy --prebuilt --target=preview --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_SCOPE }})
+          URL=$(yarn --silent vercel deploy --prebuilt \
+          --target=preview \
+          --token=$VERCEL_TOKEN \
+          --scope=$VERCEL_SCOPE)
           echo "deployment-url=$URL" >> $GITHUB_OUTPUT
-  
+
   e2e-tests:
     name: Run E2E Tests
-    needs: [unit-tests, build-and-deploy]
+    needs: [build-and-deploy]
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Faz o checkout do código-fonte do repositório
+      # 1. Faz checkout do código do repositório
       - name: Checkout repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v6.0.2
 
-      # 2. Configura o ambiente Node.js na versão definida em NODE_VERSION
+      # 2. Configura o ambiente Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v6.5.0
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # 3. Habilita o Corepack para gerenciar o Yarn corretamente
-      - name: Enable Corepack (Yarn)
+      # 3. Habilita o Corepack para gerenciamento do Yarn
+      - name: Enable Corepack
         run: corepack enable
 
-      # 4. Instala as dependências do projeto usando o yarn.lock
+      # 4. Instala as dependências do projeto
       - name: Install dependencies
         run: yarn install
 
       # 5. Instalação do Chromium
-      - name: Install Playwright Browser
+      - name: Install Plawright Browser
         run: yarn playwright install --with-deps chromium
 
-      #6. Execução dos testes de Regressão
+      # 6. Execução dos Testes de Regressão
       - name: Run E2E Regression Tests
         run: yarn playwright test
         env:
-          BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }} 
-      
-      #7. Relatório de Testes Automatizado
-      - name: Upload Playwright Report
+          BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }}
+
+      # 7. Relatório de Testes Automatizados
+      - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.1
         with:
