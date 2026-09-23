@@ -77,13 +77,21 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      # 4.1 Verificando Variaveis Vercel
+      - name: Debug Vercel env
+        run: |
+          echo "ORG_ID: ${#VERCEL_ORG_ID} caracteres, prefixo: $(echo $VERCEL_ORG_ID | cut -c1-5)"
+          echo "PROJECT_ID: ${#VERCEL_PROJECT_ID} caracteres, prefixo: $(echo $VERCEL_PROJECT_ID | cut -c1-4)"
+        env:
+          VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
+
       # 5. Obter as configurações do vercel 
       - name: Pull Vercel Config
         run: |
           yarn vercel pull --yes \
           --environment=preview \
-          --token=${{ env.VERCEL_TOKEN }} \
-          --scope=${{ env.VERCEL_SCOPE }}
+          --token=${{ env.VERCEL_TOKEN }}
       
       # 6. Build para o Vercel
       - name: Build for Vercel
